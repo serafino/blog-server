@@ -1,12 +1,13 @@
-const gulp = require('gulp');
-const del = require('del');
-const eslint = require('gulp-eslint');
-const babel = require('gulp-babel');
-const mocha = require('gulp-mocha');
-const nodemon = require('gulp-nodemon');
-const spawn = require('child_process').spawn;
+import gulp from 'gulp';
+import del from 'del';
+import eslint from 'gulp-eslint';
+import babel from 'gulp-babel';
+import mocha from 'gulp-spawn-mocha';
+import nodemon from 'gulp-nodemon';
+import childProcess from 'child_process';
 
 let node = null;
+const { spawn } = childProcess;
 
 function startNode() {
   return spawn('node', ['dist/lib/index.js'],
@@ -27,8 +28,13 @@ gulp.task('es6', ['copy'], () =>
     .pipe(gulp.dest('dist/')));
 
 gulp.task('test', ['es6'], () =>
-  gulp.src('test/**/test-*.js')
-    .pipe(mocha({ reporter: 'spec' })));
+  gulp.src('test/**/test-*.js', { read: false })
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(mocha({
+      reporter: 'spec',
+      compilers: 'js:babel-core/register',
+    })));
 
 gulp.task('serve', ['test'], () => {
   if (node) {
@@ -46,14 +52,8 @@ gulp.task('serve', ['test'], () => {
 
 gulp.task('start', ['test'], () => {
   node = startNode();
-  return gulp.watch([
-    'test/**/*',
-    'src/**/*',
-    'config/**/*',
-  ], [
-    'test',
-    'serve',
-  ]);
+  return gulp.watch([ 'src/**/*', 'config/**/*'],
+      ['test', 'serve']);
 });
 
 gulp.task('default', ['start']);

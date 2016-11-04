@@ -1,110 +1,121 @@
+/* eslint-env node, mocha */
+/* eslint-disable no-unused-expressions, no-underscore-dangle */
 import { expect } from 'chai';
 import Datastore from 'nedb-promise';
 import request from 'supertest-as-promised';
 
 import createServer from '../dist/lib/main';
+import mockPostData from './mocks/post-data';
 
 describe('/posts endpoint', () => {
   let server;
   let db;
+  let testId;
 
-  beforeEach(() => {
+  before((done) => {
     db = new Datastore({
       autoload: true,
       inMemoryOnly: true,
       timestampData: true,
     });
+ 
+    db.insert(mockPostData).then((result) => {
+      testId = result[0]._id;
+      server = createServer(0, db);
 
-    server = createServer(0, db);
+      done();
+    });
   });
 
-  it('should create posts', done => {
+  after(() => {
+    server.close();
+  });
+
+  it('should create posts', (done) => {
     request(server)
       .post('/posts')
-      .send({ data: 'Hello world' })
+      .send({ title: 'Another post', content: 'Hello world' })
       .expect(200)
 
-      .then(() => db.findOne({ data: 'Hello world' }))
+      .then(() => db.findOne({ title: 'Another post' }))
 
-      .then(result => {
-        expect(result.data).to.equal('Hello world');
+      .then((result) => {
+        expect(result.content).to.equal('Hello world');
         done();
       });
   });
 
-  it('should retrieve a list of posts', done => {
-    db.insert([{ index: 1 }, { index: 2 }, { index: 3 } ])
-      .then(() => request(server)
-        .get('/posts')
-        .expect(200))
+  it('should retrieve a list of posts', (done) => {
+    request(server)
+      .get('/posts')
+      .expect(200)
 
-      .then(response => {
+      .then((response) => {
         const posts = response.body;
 
         expect(posts).to.be.an('array');
-        expect(posts.length).to.equal(3);
+        expect(posts.length).to.equal(4);
 
         done();
       });
   });
 
-  it('should retrieve a single post', done => {
-    db.insert({ index: 1 })
-      .then(post => request(server)
-        .get(`/posts/${post._id}`)
-        .expect(200))
+  it('should retrieve a single post', (done) => {
+    request(server)
+      .get(`/posts/${testId}`)
+      .expect(200)
 
-      .then(response => {
+      .then((response) => {
         const findResult = response.body;
-        expect(findResult.index).to.equal(1);
+        expect(findResult).not.to.be.null;
+        expect(findResult.title).to.equal('First post');
 
         done();
       });
   });
 
-  it('should explicitly update existing posts', done => {
-    db.insert({ index: 1, title: 'Hello world' })
-      .then(post => request(server)
-        .put(`/posts/${post._id}`)
-        .send({ title: 'Hello, world!' })
-        .expect(200))
+  it('should explicitly update existing posts', (done) => {
+    request(server)
+      .put(`/posts/${testId}`)
+      .send({ title: '1st Post' })
+      .expect(200)
 
-      .then(response => {
-        const result = response.body;
+      .then(() => db.findOne({ _id: testId }))  
+
+      .then((result) => {
+        expect(result.title).to.equal('1st Post');
+        expect(result.content).to.equal('This is my first post.');
+
+        done();
+      });
+  });
+
+  it('should implicitly update existing posts', (done) => {
+    request(server)
+      .post('/posts')
+      .send({ _id: testId, title: 'Hello, world!' })
+      .expect(200)
+
+      .then(() => db.findOne({ _id: testId }))  
+
+      .then((result) => {
         expect(result.title).to.equal('Hello, world!');
-        expect(result.index).to.equal(1);
+        expect(result.content).to.equal('This is my first post.');
 
         done();
       });
   });
 
-  it('should implicitly update existing posts', done => {
-    db.insert({ index: 1, title: 'Hello world' })
-      .then(post => request(server)
-        .post('/posts')
-        .send({ _id: post._id, title: 'Hello, world!' })
-        .expect(200))
+  it('should delete existing posts', (done) => {
+    request(server)
+      .del(`/posts/${testId}`)
+      .expect(200)
 
-      .then(response => {
-        const result = response.body;
-        expect(result.title).to.equal('Hello, world!');
-        expect(result.index).to.equal(1);
+      .then(() => db.findOne({ _id: testId }))
 
+      .then((result) => {
+        expect(result).to.be.null;
         done();
       });
-  });
-
-  it('should delete existing posts', done => {
-    db.insert({ index: 1, title: 'Hello world' })
-      .then(post => request(server)
-        .del(`/posts/${post._id}`)
-        .expect(200)
-
-        .then(() => db.findOne({ _id: post._id }))
-
-        .then(result => {
-          expect(result).to.be.null;
-          done();
-        }));
   });
 });
