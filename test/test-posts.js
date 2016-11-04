@@ -18,7 +18,7 @@ describe('/posts endpoint', () => {
       inMemoryOnly: true,
       timestampData: true,
     });
- 
+
     db.insert(mockPostData).then((result) => {
       testId = result[0]._id;
       server = createServer(0, db);
@@ -80,7 +80,7 @@ describe('/posts endpoint', () => {
       .send({ title: '1st Post' })
       .expect(200)
 
-      .then(() => db.findOne({ _id: testId }))  
+      .then(() => db.findOne({ _id: testId }))
 
       .then((result) => {
         expect(result.title).to.equal('1st Post');
@@ -96,7 +96,7 @@ describe('/posts endpoint', () => {
       .send({ _id: testId, title: 'Hello, world!' })
       .expect(200)
 
-      .then(() => db.findOne({ _id: testId }))  
+      .then(() => db.findOne({ _id: testId }))
 
       .then((result) => {
         expect(result.title).to.equal('Hello, world!');

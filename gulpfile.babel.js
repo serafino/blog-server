@@ -20,21 +20,26 @@ gulp.task('copy', ['clean'], () =>
   gulp.src('config/**/*')
     .pipe(gulp.dest('dist/config/')));
 
-gulp.task('es6', ['copy'], () =>
+gulp.task('babel', ['copy'], () =>
   gulp.src('src/**/*.js')
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(babel())
     .pipe(gulp.dest('dist/')));
 
-gulp.task('test', ['es6'], () =>
-  gulp.src('test/**/test-*.js', { read: false })
+gulp.task('lint-tests', ['babel'], () => 
+  gulp.src('test/**/*.js')
     .pipe(eslint())
-    .pipe(eslint.format())
+    .pipe(eslint.format()));
+
+gulp.task('test', ['babel'], () =>
+  gulp.src('test/**/test-*.js', { read: false })
     .pipe(mocha({
       reporter: 'spec',
       compilers: 'js:babel-core/register',
     })));
+
+gulp.task('build', ['test']);
 
 gulp.task('serve', ['test'], () => {
   if (node) {
@@ -52,7 +57,7 @@ gulp.task('serve', ['test'], () => {
 
 gulp.task('start', ['test'], () => {
   node = startNode();
-  return gulp.watch([ 'src/**/*', 'config/**/*'],
+  return gulp.watch(['src/**/*', 'config/**/*', 'test/**/*'],
       ['test', 'serve']);
 });
 
