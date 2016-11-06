@@ -1,1 +1,3 @@
-require('./main')();
+import createServer from './main';
+
+createServer();

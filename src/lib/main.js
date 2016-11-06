@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 
 import createRoutes from '../routes';
 
-module.exports = function createServer(customPort, db) {
+export default function createServer(customPort, db) {
   const app = express();
   let port = config.get('port') || 3000;
 
@@ -17,4 +17,4 @@ module.exports = function createServer(customPort, db) {
 
   return app.listen(port, () =>
     console.log(`Listening on port ${port}`));
-};
+}

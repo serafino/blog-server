@@ -34,9 +34,12 @@ describe('/posts endpoint', () => {
   it('should create posts', (done) => {
     request(server)
       .post('/posts')
-      .send({ title: 'Another post', content: 'Hello world' })
-      .expect(200)
+      .send({
+         title: 'Another post',
+         content: 'Hello world',
+      })
 
+      .expect(200)
       .then(() => db.findOne({ title: 'Another post' }))
 
       .then((result) => {
@@ -79,7 +82,6 @@ describe('/posts endpoint', () => {
       .put(`/posts/${testId}`)
       .send({ title: '1st Post' })
       .expect(200)
-
       .then(() => db.findOne({ _id: testId }))
 
       .then((result) => {
@@ -94,8 +96,8 @@ describe('/posts endpoint', () => {
     request(server)
       .post('/posts')
       .send({ _id: testId, title: 'Hello, world!' })
-      .expect(200)
 
+      .expect(200)
       .then(() => db.findOne({ _id: testId }))
 
       .then((result) => {
@@ -110,7 +112,6 @@ describe('/posts endpoint', () => {
     request(server)
       .del(`/posts/${testId}`)
       .expect(200)
-
       .then(() => db.findOne({ _id: testId }))
 
       .then((result) => {
