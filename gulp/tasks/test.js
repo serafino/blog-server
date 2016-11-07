@@ -1,12 +1,8 @@
 import gulp from 'gulp';
 import mocha from 'gulp-spawn-mocha';
 
-gulp.task('test', ['lint-tests'], () =>
-  gulp.src('test/**/test-*.js', { read: false })
-    .pipe(mocha({
-      reporter: 'spec',
-      compilers: 'js:babel-core/register',
-      env: { 'NODE_ENV': 'test' },
-    })));
+import { mochaConfig, tests, beforeTest } from '../config';
 
-gulp.task('build', ['test']);
+gulp.task('test', beforeTest, () =>
+  gulp.src(tests, { read: false })
+    .pipe(mocha(mochaConfig)));

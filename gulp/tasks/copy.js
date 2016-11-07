@@ -1,5 +1,10 @@
 import gulp from 'gulp';
 
-gulp.task('copy', ['clean'], () =>
-  gulp.src('config/**/*')
-    .pipe(gulp.dest('dist/config/')));
+import {
+  configFolder,
+  configDestination,
+  beforeCopy } from '../config';
+
+gulp.task('copy', beforeCopy, () =>
+  gulp.src(configFolder)
+    .pipe(gulp.dest(configDestination)));

@@ -1,4 +1,6 @@
 import gulp from 'gulp';
 import del from 'del';
 
-gulp.task('clean', () => del('dist/'));
+import { dest, beforeClean } from '../config';
+
+gulp.task('clean', beforeClean, () => del(dest));
