@@ -37,8 +37,8 @@ describe('/posts endpoint', () => {
       .post('/posts')
       .set('Authorization', `Basic ${Base64.encode('test:test')}`)
       .send({
-         title: 'Another post',
-         content: 'Hello world',
+        title: 'Another post',
+        content: 'Hello world',
       })
 
       .expect(200)

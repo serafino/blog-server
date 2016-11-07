@@ -4,7 +4,7 @@
   "description": "Server-side component for Blog framework",
   "scripts": {
     "test": "gulp test",
-    "start": "nodemon --watch dist/ dist/lib/index"
+    "start": "gulp start"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,9 @@
     "js-base64": "^2.1.9",
     "lodash": "^4.16.6",
     "nedb-promise": "^2.0.0",
+    "require-dir": "^0.3.1",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
     "supertest": "^2.0.1",
     "supertest-as-promised": "^4.0.2",
     "yargs": "^6.3.0"
@@ -45,9 +48,7 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^3.0.1",
-    "gulp-nodemon": "^2.2.1",
     "gulp-spawn-mocha": "^3.1.0",
-    "mocha": "^3.1.2",
-    "nodemon": "^1.11.0"
+    "mocha": "^3.1.2"
   }
 }
