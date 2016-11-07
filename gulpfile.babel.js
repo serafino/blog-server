@@ -37,6 +37,7 @@ gulp.task('test', ['babel'], () =>
     .pipe(mocha({
       reporter: 'spec',
       compilers: 'js:babel-core/register',
+      env: { 'NODE_ENV': 'test' },
     })));
 
 gulp.task('build', ['test']);

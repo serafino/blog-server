@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import basicAuth from 'basic-auth';
 import config from 'config';
 import Datastore from 'nedb-promise';
