@@ -3,6 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 import createRoutes from '../routes';
+import authenticate from './authenticate';
 
 export default function createServer(customPort, db) {
   const app = express();
@@ -12,6 +13,7 @@ export default function createServer(customPort, db) {
     port = customPort;
   }
 
+  app.use(authenticate);
   app.use(bodyParser.json());
   createRoutes(app, config, db);
 

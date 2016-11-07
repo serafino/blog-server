@@ -3,6 +3,7 @@
 import { expect } from 'chai';
 import Datastore from 'nedb-promise';
 import request from 'supertest-as-promised';
+import { Base64 } from 'js-base64';
 
 import createServer from '../dist/lib/main';
 import mockPostData from './mocks/post-data';
@@ -34,6 +35,7 @@ describe('/posts endpoint', () => {
   it('should create posts', (done) => {
     request(server)
       .post('/posts')
+      .set('Authorization', `Basic ${Base64.encode('test:test')}`)
       .send({
          title: 'Another post',
          content: 'Hello world',
@@ -51,6 +53,7 @@ describe('/posts endpoint', () => {
   it('should retrieve a list of posts', (done) => {
     request(server)
       .get('/posts')
+      .set('Authorization', `Basic ${Base64.encode('test:test')}`)
       .expect(200)
 
       .then((response) => {
@@ -66,6 +69,7 @@ describe('/posts endpoint', () => {
   it('should retrieve a single post', (done) => {
     request(server)
       .get(`/posts/${testId}`)
+      .set('Authorization', `Basic ${Base64.encode('test:test')}`)
       .expect(200)
 
       .then((response) => {
@@ -80,6 +84,7 @@ describe('/posts endpoint', () => {
   it('should explicitly update existing posts', (done) => {
     request(server)
       .put(`/posts/${testId}`)
+      .set('Authorization', `Basic ${Base64.encode('test:test')}`)
       .send({ title: '1st Post' })
       .expect(200)
       .then(() => db.findOne({ _id: testId }))
@@ -95,6 +100,7 @@ describe('/posts endpoint', () => {
   it('should implicitly update existing posts', (done) => {
     request(server)
       .post('/posts')
+      .set('Authorization', `Basic ${Base64.encode('test:test')}`)
       .send({ _id: testId, title: 'Hello, world!' })
 
       .expect(200)
@@ -111,6 +117,7 @@ describe('/posts endpoint', () => {
   it('should delete existing posts', (done) => {
     request(server)
       .del(`/posts/${testId}`)
+      .set('Authorization', `Basic ${Base64.encode('test:test')}`)
       .expect(200)
       .then(() => db.findOne({ _id: testId }))
 
