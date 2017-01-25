@@ -1,7 +1,0 @@
-{
-  "port": 3000,
-  "datastore": {
-    "posts": "data/posts.db",
-    "users": "data/users.db"
-  }
-}
